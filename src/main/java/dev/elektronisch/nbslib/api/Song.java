@@ -26,11 +26,13 @@ public final class Song {
     private final short height, length;
 
     private final Int2ObjectMap<Layer> layerMap;
+    private final Int2ObjectMap<String> lyricsMap;
 
     Song(final String title, final String author,
          final String originalAuthor, final String description,
          final float speed, final short height,
-         final short length, final Int2ObjectMap<Layer> layerMap) {
+         final short length, final Int2ObjectMap<Layer> layerMap,
+         final Int2ObjectMap<String> lyricsMap) {
         this.title = title;
         this.author = author;
         this.originalAuthor = originalAuthor;
@@ -40,11 +42,14 @@ public final class Song {
         this.height = height;
         this.length = length;
         this.layerMap = layerMap;
+        this.lyricsMap = lyricsMap;
     }
 
     @Nullable
     public static Song createFromFile(final File nbsFile) {
         final Int2ObjectMap<Layer> layerMap = new Int2ObjectOpenHashMap<>();
+        final Int2ObjectMap<String> lyricsMap = new Int2ObjectOpenHashMap<>();
+
         try (final DataInputStream dataInputStream = new DataInputStream(new FileInputStream(nbsFile))) {
             short length = StreamUtil.readShort(dataInputStream);
             int version = 0;
@@ -137,7 +142,21 @@ public final class Song {
                     layer.setVolume(volume);
                 }
             }
-            return new Song(title, author, originalAuthor, description, speed, height, length, layerMap);
+
+            final byte customInstrumentCount = dataInputStream.readByte();
+            for (int i = 0; i < customInstrumentCount; i++) {
+                StreamUtil.readString(dataInputStream); // Name
+                StreamUtil.readString(dataInputStream); // Sound file
+                dataInputStream.readByte(); // Custom pitch
+                dataInputStream.readByte(); // Custom key
+            }
+
+            final byte lyricsEntries = dataInputStream.readByte();
+            for (int i = 0; i < lyricsEntries; i++) {
+                lyricsMap.put(StreamUtil.readInt(dataInputStream), StreamUtil.readString(dataInputStream));
+            }
+
+            return new Song(title, author, originalAuthor, description, speed, height, length, layerMap, lyricsMap);
         } catch (final IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, "An error occurred while creating song from '{}'", nbsFile.getName());
         }
