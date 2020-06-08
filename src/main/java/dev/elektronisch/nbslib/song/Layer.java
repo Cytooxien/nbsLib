@@ -1,4 +1,4 @@
-package dev.elektronisch.nbslib.api;
+package dev.elektronisch.nbslib.song;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

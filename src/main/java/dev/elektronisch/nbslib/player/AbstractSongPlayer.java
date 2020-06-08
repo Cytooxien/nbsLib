@@ -1,9 +1,9 @@
 package dev.elektronisch.nbslib.player;
 
 import dev.elektronisch.nbslib.NBSLibPlugin;
-import dev.elektronisch.nbslib.api.Song;
-import dev.elektronisch.nbslib.api.SongPlayerEventAdapter;
-import dev.elektronisch.nbslib.api.SongSelectionMode;
+import dev.elektronisch.nbslib.song.Song;
+import dev.elektronisch.nbslib.song.SongPlayerEventAdapter;
+import dev.elektronisch.nbslib.song.SongSelectionMode;
 import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;

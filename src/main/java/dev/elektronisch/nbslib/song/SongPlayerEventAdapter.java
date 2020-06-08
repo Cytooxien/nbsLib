@@ -1,4 +1,4 @@
-package dev.elektronisch.nbslib.api;
+package dev.elektronisch.nbslib.song;
 
 import org.bukkit.entity.Player;
 

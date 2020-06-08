@@ -1,6 +1,6 @@
 package dev.elektronisch.nbslib.util;
 
-import dev.elektronisch.nbslib.api.Note;
+import dev.elektronisch.nbslib.song.Note;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,8 +1,10 @@
-package dev.elektronisch.nbslib.api;
+package dev.elektronisch.nbslib.song;
 
 import dev.elektronisch.nbslib.util.StreamUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,13 +27,13 @@ public final class Song {
     private final float speed, delay;
     private final short height, length;
 
-    private final Int2ObjectMap<Layer> layerMap;
+    private final Short2ObjectMap<Layer> layerMap;
     private final Int2ObjectMap<String> lyricsMap;
 
     Song(final String title, final String author,
          final String originalAuthor, final String description,
          final float speed, final short height,
-         final short length, final Int2ObjectMap<Layer> layerMap,
+         final short length, final Short2ObjectMap<Layer> layerMap,
          final Int2ObjectMap<String> lyricsMap) {
         this.title = title;
         this.author = author;
@@ -47,7 +49,7 @@ public final class Song {
 
     @Nullable
     public static Song createFromFile(final File nbsFile) {
-        final Int2ObjectMap<Layer> layerMap = new Int2ObjectOpenHashMap<>();
+        final Short2ObjectMap<Layer> layerMap = new Short2ObjectOpenHashMap<>();
         final Int2ObjectMap<String> lyricsMap = new Int2ObjectOpenHashMap<>();
 
         try (final DataInputStream dataInputStream = new DataInputStream(new FileInputStream(nbsFile))) {
@@ -121,7 +123,7 @@ public final class Song {
                 length = currentTick;
             }
 
-            for (int i = 0; i < height; i++) {
+            for (short i = 0; i < height; i++) {
                 final Layer layer = layerMap.get(i);
                 final String name = StreamUtil.readString(dataInputStream);
 
@@ -195,8 +197,12 @@ public final class Song {
         return length;
     }
 
-    public Int2ObjectMap<Layer> getLayerMap() {
+    public Short2ObjectMap<Layer> getLayerMap() {
         return layerMap;
+    }
+
+    public Int2ObjectMap<String> getLyricsMap() {
+        return lyricsMap;
     }
 
     @Override

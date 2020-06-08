@@ -1,8 +1,8 @@
 package dev.elektronisch.nbslib.player;
 
-import dev.elektronisch.nbslib.api.Layer;
-import dev.elektronisch.nbslib.api.Note;
-import dev.elektronisch.nbslib.api.Song;
+import dev.elektronisch.nbslib.song.Layer;
+import dev.elektronisch.nbslib.song.Note;
+import dev.elektronisch.nbslib.song.Song;
 import dev.elektronisch.nbslib.util.NoteUtil;
 import dev.elektronisch.nbslib.util.PitchUtil;
 import org.bukkit.Location;
