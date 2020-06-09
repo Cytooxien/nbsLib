@@ -1,8 +1,6 @@
 package dev.elektronisch.nbslib.song;
 
 import dev.elektronisch.nbslib.util.StreamUtil;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
@@ -28,13 +26,11 @@ public final class Song {
     private final short height, length;
 
     private final Short2ObjectMap<Layer> layerMap;
-    private final Int2ObjectMap<String> lyricsMap;
 
     Song(final String title, final String author,
          final String originalAuthor, final String description,
          final float speed, final short height,
-         final short length, final Short2ObjectMap<Layer> layerMap,
-         final Int2ObjectMap<String> lyricsMap) {
+         final short length, final Short2ObjectMap<Layer> layerMap) {
         this.title = title;
         this.author = author;
         this.originalAuthor = originalAuthor;
@@ -44,13 +40,11 @@ public final class Song {
         this.height = height;
         this.length = length;
         this.layerMap = layerMap;
-        this.lyricsMap = lyricsMap;
     }
 
     @Nullable
     public static Song createFromFile(final File nbsFile) {
         final Short2ObjectMap<Layer> layerMap = new Short2ObjectOpenHashMap<>();
-        final Int2ObjectMap<String> lyricsMap = new Int2ObjectOpenHashMap<>();
 
         try (final DataInputStream dataInputStream = new DataInputStream(new FileInputStream(nbsFile))) {
             short length = StreamUtil.readShort(dataInputStream);
@@ -145,20 +139,7 @@ public final class Song {
                 }
             }
 
-            final byte customInstrumentCount = dataInputStream.readByte();
-            for (int i = 0; i < customInstrumentCount; i++) {
-                StreamUtil.readString(dataInputStream); // Name
-                StreamUtil.readString(dataInputStream); // Sound file
-                dataInputStream.readByte(); // Custom pitch
-                dataInputStream.readByte(); // Custom key
-            }
-
-            final byte lyricsEntries = dataInputStream.readByte();
-            for (int i = 0; i < lyricsEntries; i++) {
-                lyricsMap.put(StreamUtil.readInt(dataInputStream), StreamUtil.readString(dataInputStream));
-            }
-
-            return new Song(title, author, originalAuthor, description, speed, height, length, layerMap, lyricsMap);
+            return new Song(title, author, originalAuthor, description, speed, height, length, layerMap);
         } catch (final IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, "An error occurred while creating song from '{}'", nbsFile.getName());
         }
@@ -199,10 +180,6 @@ public final class Song {
 
     public Short2ObjectMap<Layer> getLayerMap() {
         return layerMap;
-    }
-
-    public Int2ObjectMap<String> getLyricsMap() {
-        return lyricsMap;
     }
 
     @Override
