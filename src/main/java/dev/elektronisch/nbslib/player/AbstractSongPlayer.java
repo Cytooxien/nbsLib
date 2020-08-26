@@ -15,14 +15,14 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractSongPlayer {
+public abstract class AbstractSongPlayer<E extends SongPlayerEventAdapter> {
 
     private static final Random RANDOM = new Random();
     private static final NBSLibPlugin PLUGIN = JavaPlugin.getPlugin(NBSLibPlugin.class);
 
     protected final Song[] songs;
     protected final Set<Player> listeningPlayers = ConcurrentHashMap.newKeySet();
-    protected final Set<SongPlayerEventAdapter> eventAdapters = new HashSet<>();
+    protected final Set<E> eventAdapters = new HashSet<>();
 
     protected Song currentSong;
     protected int currentSongIndex;
@@ -50,7 +50,7 @@ public abstract class AbstractSongPlayer {
             while (playing) {
                 if (PLUGIN.isDisabling()) break;
 
-                long startTime = System.currentTimeMillis();
+                final long startTime = System.currentTimeMillis();
                 if (currentTick++ > currentSong.getLength()) {
                     currentTick = -1;
                     if (selectionMode == SongSelectionMode.REPEAT) {
@@ -119,7 +119,11 @@ public abstract class AbstractSongPlayer {
         eventAdapters.forEach(adapter -> adapter.onPlayerRemoved(player));
     }
 
-    public void addEventAdapter(final SongPlayerEventAdapter adapter) {
+    public Set<Player> getListeningPlayers() {
+        return listeningPlayers;
+    }
+
+    public void addEventAdapter(final E adapter) {
         eventAdapters.add(adapter);
     }
 
