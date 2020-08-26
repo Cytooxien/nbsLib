@@ -146,5 +146,4 @@ public abstract class AbstractSongPlayer {
     public void setVolume(final byte volume) {
         this.volume = volume;
     }
-
 }

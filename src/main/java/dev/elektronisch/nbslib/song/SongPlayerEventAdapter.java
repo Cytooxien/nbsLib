@@ -13,5 +13,4 @@ public interface SongPlayerEventAdapter {
     void onPlayerAdded(Player player);
 
     void onPlayerRemoved(Player player);
-
 }

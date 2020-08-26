@@ -57,5 +57,4 @@ public final class PositionedSongPlayer extends AbstractSongPlayer {
     public boolean isInRange(final Player player) {
         return Objects.equals(player.getLocation().getWorld(), targetLocation.getWorld()) && player.getLocation().distanceSquared(targetLocation) <= distanceSquared;
     }
-
 }

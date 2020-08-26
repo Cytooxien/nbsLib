@@ -1,9 +1,13 @@
 # nbsLib
-**nbsLib** is a leightweight library for playing .nbs-files. 
+**nbsLib** is a lightweight library for playing .nbs-files. 
 
-This library serves a reformatted and clean code-base inspired by [xxmicloxx's NoteBlockAPI](https://github.com/xxmicloxx/NoteBlockAPI). Unlike the NoteBlockAPI by xxmicloxx **only 1.16.1 is supported**. The support of multiple versions is not planned and **will not be done**!
+This library serves a reformatted and clean code-base inspired by [xxmicloxx's NoteBlockAPI](https://github.com/xxmicloxx/NoteBlockAPI). Unlike the NoteBlockAPI by xxmicloxx **only 1.16.2 is fully supported**.
+Since this library is only using the bukkit-api, it may also work with other versions.
+(I think 1.12+)
 
-> **Important: Please do not contact xxmicloxx for errors with this library!**
+The support of multiple versions **is not intended** and **will not be pursued**!
+
+> **Important: Please do not contact xxmicloxx for errors occurring with this library!**
 
 ## **Examples:**
 Examples will follow soon, try to figure it out by yourself by now!

@@ -30,5 +30,4 @@ public final class PitchUtil {
         if (pitch > 2400) pitch = 2400;
         return PITCHES[pitch];
     }
-
 }
