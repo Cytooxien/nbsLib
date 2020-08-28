@@ -8,7 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 public final class SongPlayerRangeListener implements Listener {
 
@@ -71,11 +73,11 @@ public final class SongPlayerRangeListener implements Listener {
 
     private void processRange(final Player player, final Location location) {
         for (final PositionedSongPlayer songPlayer : plugin.getPositionedSongPlayers()) {
-            if (!songPlayer.getTargetLocation().getWorld().equals(location.getWorld()))
+            if (!Objects.equals(songPlayer.getTargetLocation().getWorld(), location.getWorld()))
                 continue;
 
-            final Set<Player> listeningPlayers = songPlayer.getListeningPlayers();
-            if (listeningPlayers.isEmpty() || listeningPlayers.contains(player)) {
+            final Set<UUID> listeningPlayers = songPlayer.getListeningPlayers();
+            if (listeningPlayers.isEmpty() || listeningPlayers.contains(player.getUniqueId())) {
                 final double newDistance = player.getLocation().distanceSquared(songPlayer.getTargetLocation());
                 if (newDistance > songPlayer.getDistanceSquared()) {
                     songPlayer.playerLeftRange(player);

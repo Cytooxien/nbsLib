@@ -2,8 +2,6 @@ package dev.elektronisch.nbslib;
 
 import dev.elektronisch.nbslib.listener.SongPlayerRangeListener;
 import dev.elektronisch.nbslib.player.PositionedSongPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Set;
@@ -16,7 +14,6 @@ public final class NBSLibPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getServicesManager().register(NBSLibPlugin.class, this, this, ServicePriority.Normal);
         getServer().getPluginManager().registerEvents(new SongPlayerRangeListener(this), this);
     }
 

@@ -2,9 +2,9 @@ package dev.elektronisch.nbslib.util;
 
 import org.bukkit.Sound;
 
-public final class NoteUtil {
+public final class InstrumentUtil {
 
-    private NoteUtil() {
+    private InstrumentUtil() {
     }
 
     public static Sound getInstrument(final byte instrument) {

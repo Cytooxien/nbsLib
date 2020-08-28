@@ -1,11 +1,10 @@
 package dev.elektronisch.nbslib.player;
 
-import dev.elektronisch.nbslib.NBSLibPlugin;
 import dev.elektronisch.nbslib.song.Layer;
 import dev.elektronisch.nbslib.song.Note;
 import dev.elektronisch.nbslib.song.PositionedSongPlayerEventAdapter;
 import dev.elektronisch.nbslib.song.Song;
-import dev.elektronisch.nbslib.util.NoteUtil;
+import dev.elektronisch.nbslib.util.InstrumentUtil;
 import dev.elektronisch.nbslib.util.PitchUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -14,10 +13,10 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 public final class PositionedSongPlayer extends AbstractSongPlayer<PositionedSongPlayerEventAdapter> {
 
-    private static final NBSLibPlugin PLUGIN = Bukkit.getServicesManager().load(NBSLibPlugin.class);
     private static final float DISTANCE_MULTIPLIER = 1F / 16F;
 
     private Location targetLocation;
@@ -27,6 +26,32 @@ public final class PositionedSongPlayer extends AbstractSongPlayer<PositionedSon
     public PositionedSongPlayer(final Location targetLocation, final Song... songs) {
         super(songs);
         this.targetLocation = targetLocation;
+    }
+
+    @Override
+    public void play() {
+        super.play();
+
+        final Predicate<Player> predicate = player -> player.getWorld().equals(targetLocation.getWorld()) && player.getLocation().distanceSquared(targetLocation) > distanceSquared;
+        if (listeningPlayers.isEmpty()) {
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                if (predicate.test(player)) playersInRange.add(player.getUniqueId());
+            });
+        } else {
+            listeningPlayers.forEach(uuid -> {
+                final Player player = Bukkit.getPlayer(uuid);
+                if (player != null && predicate.test(player)) playersInRange.add(player.getUniqueId());
+            });
+        }
+
+        PLUGIN.getPositionedSongPlayers().add(this);
+    }
+
+    @Override
+    public void pause() {
+        super.pause();
+        PLUGIN.getPositionedSongPlayers().remove(this);
+        playersInRange.clear();
     }
 
     @Override
@@ -40,20 +65,8 @@ public final class PositionedSongPlayer extends AbstractSongPlayer<PositionedSon
             final float relativeVolume = ((layer.getVolume() * volume * note.getVelocity()) / 1_000_000F) * distance * DISTANCE_MULTIPLIER;
             final float pitch = PitchUtil.getPitch(note);
 
-            player.playSound(targetLocation, NoteUtil.getInstrument(note.getInstrument()), soundCategory, relativeVolume, pitch);
+            player.playSound(targetLocation, InstrumentUtil.getInstrument(note.getInstrument()), soundCategory, relativeVolume, pitch);
         }
-    }
-
-    @Override
-    public void play() {
-        super.play();
-        PLUGIN.getPositionedSongPlayers().add(this);
-    }
-
-    @Override
-    public void pause() {
-        super.pause();
-        PLUGIN.getPositionedSongPlayers().remove(this);
     }
 
     public void playerEnteredRange(final Player player) {

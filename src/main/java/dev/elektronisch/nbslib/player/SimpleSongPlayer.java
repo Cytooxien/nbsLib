@@ -3,7 +3,7 @@ package dev.elektronisch.nbslib.player;
 import dev.elektronisch.nbslib.song.Layer;
 import dev.elektronisch.nbslib.song.Note;
 import dev.elektronisch.nbslib.song.Song;
-import dev.elektronisch.nbslib.util.NoteUtil;
+import dev.elektronisch.nbslib.util.InstrumentUtil;
 import dev.elektronisch.nbslib.util.PitchUtil;
 import org.bukkit.entity.Player;
 
@@ -21,7 +21,7 @@ public final class SimpleSongPlayer extends AbstractSongPlayer {
 
             final float relativeVolume = (layer.getVolume() * volume * note.getVelocity()) / 1_000_000F;
             final float pitch = PitchUtil.getPitch(note);
-            player.playSound(player.getEyeLocation(), NoteUtil.getInstrument(note.getInstrument()), soundCategory, relativeVolume, pitch);
+            player.playSound(player.getEyeLocation(), InstrumentUtil.getInstrument(note.getInstrument()), soundCategory, relativeVolume, pitch);
         }
     }
 }

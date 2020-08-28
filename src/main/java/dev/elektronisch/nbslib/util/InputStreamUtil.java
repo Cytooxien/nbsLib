@@ -4,9 +4,9 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public final class StreamUtil {
+public final class InputStreamUtil {
 
-    private StreamUtil() {
+    private InputStreamUtil() {
 
     }
 

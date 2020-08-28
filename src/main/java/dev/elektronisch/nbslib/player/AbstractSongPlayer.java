@@ -9,19 +9,16 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractSongPlayer<E extends SongPlayerEventAdapter> {
 
     private static final Random RANDOM = new Random();
-    private static final NBSLibPlugin PLUGIN = JavaPlugin.getPlugin(NBSLibPlugin.class);
+    protected static final NBSLibPlugin PLUGIN = JavaPlugin.getPlugin(NBSLibPlugin.class);
 
     protected final Song[] songs;
-    protected final Set<Player> listeningPlayers = ConcurrentHashMap.newKeySet();
+    protected final Set<UUID> listeningPlayers = ConcurrentHashMap.newKeySet();
     protected final Set<E> eventAdapters = new HashSet<>();
 
     protected Song currentSong;
@@ -69,10 +66,18 @@ public abstract class AbstractSongPlayer<E extends SongPlayerEventAdapter> {
                     continue;
                 }
 
-                final Collection<? extends Player> players = listeningPlayers.isEmpty() ? Bukkit.getOnlinePlayers() : listeningPlayers;
-                players.forEach(player -> {
-                    if (player != null && player.isOnline()) handleTick(player);
-                });
+                if (listeningPlayers.isEmpty()) {
+                    Bukkit.getOnlinePlayers().forEach(this::handleTick);
+                } else {
+                    final Iterator<UUID> iterator = listeningPlayers.iterator();
+                    while (iterator.hasNext()) {
+                        final UUID uuid = iterator.next();
+                        final Player player = Bukkit.getPlayer(uuid);
+                        if (player == null) iterator.remove();
+
+                        handleTick(player);
+                    }
+                }
 
                 final long duration = System.currentTimeMillis() - startTime;
                 final float delayMillis = currentSong.getDelay() * 50;
@@ -109,17 +114,24 @@ public abstract class AbstractSongPlayer<E extends SongPlayerEventAdapter> {
 
     public abstract void handleTick(final Player player);
 
-    public void addListeningPlayer(final Player player) {
-        listeningPlayers.add(player);
+    public void addListeningPlayer(final UUID uuid) {
+        final Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return;
+
+        listeningPlayers.add(uuid);
         eventAdapters.forEach(adapter -> adapter.onPlayerAdded(player));
     }
 
-    public void removeListeningPlayer(final Player player) {
-        listeningPlayers.remove(player);
+    public void removeListeningPlayer(final UUID uuid) {
+        listeningPlayers.remove(uuid);
+
+        final Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return;
+
         eventAdapters.forEach(adapter -> adapter.onPlayerRemoved(player));
     }
 
-    public Set<Player> getListeningPlayers() {
+    public Set<UUID> getListeningPlayers() {
         return listeningPlayers;
     }
 

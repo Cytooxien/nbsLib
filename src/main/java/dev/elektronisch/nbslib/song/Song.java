@@ -1,6 +1,6 @@
 package dev.elektronisch.nbslib.song;
 
-import dev.elektronisch.nbslib.util.StreamUtil;
+import dev.elektronisch.nbslib.util.InputStreamUtil;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
@@ -47,50 +47,50 @@ public final class Song {
         final Short2ObjectMap<Layer> layerMap = new Short2ObjectOpenHashMap<>();
 
         try (final DataInputStream dataInputStream = new DataInputStream(new FileInputStream(nbsFile))) {
-            short length = StreamUtil.readShort(dataInputStream);
+            short length = InputStreamUtil.readShort(dataInputStream);
             int version = 0;
             if (length == 0) {
                 version = dataInputStream.readByte();
                 dataInputStream.readByte(); // We don't support custom instruments
                 if (version >= 3) {
-                    length = StreamUtil.readShort(dataInputStream);
+                    length = InputStreamUtil.readShort(dataInputStream);
                 }
             }
-            final short height = StreamUtil.readShort(dataInputStream);
-            final String title = StreamUtil.readString(dataInputStream);
-            final String author = StreamUtil.readString(dataInputStream);
-            final String originalAuthor = StreamUtil.readString(dataInputStream);
-            final String description = StreamUtil.readString(dataInputStream);
-            final float speed = StreamUtil.readShort(dataInputStream) / 100f;
+            final short height = InputStreamUtil.readShort(dataInputStream);
+            final String title = InputStreamUtil.readString(dataInputStream);
+            final String author = InputStreamUtil.readString(dataInputStream);
+            final String originalAuthor = InputStreamUtil.readString(dataInputStream);
+            final String description = InputStreamUtil.readString(dataInputStream);
+            final float speed = InputStreamUtil.readShort(dataInputStream) / 100f;
 
             // The following information is unnecessary; we're skipping it
             dataInputStream.readBoolean(); // Auto-save enabled
             dataInputStream.readByte(); // Auto-save period
             dataInputStream.readByte(); // Time signature
-            StreamUtil.readInt(dataInputStream); // Minutes spent for project
-            StreamUtil.readInt(dataInputStream); // Left clicks
-            StreamUtil.readInt(dataInputStream); // Right clicks
-            StreamUtil.readInt(dataInputStream); // Blocks added
-            StreamUtil.readInt(dataInputStream); // Blocks removed
-            StreamUtil.readString(dataInputStream); // .midi / .schem name
+            InputStreamUtil.readInt(dataInputStream); // Minutes spent for project
+            InputStreamUtil.readInt(dataInputStream); // Left clicks
+            InputStreamUtil.readInt(dataInputStream); // Right clicks
+            InputStreamUtil.readInt(dataInputStream); // Blocks added
+            InputStreamUtil.readInt(dataInputStream); // Blocks removed
+            InputStreamUtil.readString(dataInputStream); // .midi / .schem name
 
             // Only read this information in NBS 4 or higher
             if (version >= 4) {
                 dataInputStream.readByte(); // Loop on/off
                 dataInputStream.readByte(); // Max Loops
-                StreamUtil.readShort(dataInputStream); // Loop start
+                InputStreamUtil.readShort(dataInputStream); // Loop start
             }
 
             short currentTick = -1;
             while (true) {
-                final short jumpTicks = StreamUtil.readShort(dataInputStream);
+                final short jumpTicks = InputStreamUtil.readShort(dataInputStream);
                 if (jumpTicks == 0) break;
 
                 currentTick += jumpTicks;
 
                 short currentLayer = -1;
                 while (true) {
-                    final short jumpLayers = StreamUtil.readShort(dataInputStream);
+                    final short jumpLayers = InputStreamUtil.readShort(dataInputStream);
                     if (jumpLayers == 0) break;
 
                     currentLayer += jumpLayers;
@@ -105,7 +105,7 @@ public final class Song {
                     if (version >= 4) {
                         velocity = dataInputStream.readByte();
                         dataInputStream.readByte(); // Panning isn't implemented yet
-                        pitch = StreamUtil.readShort(dataInputStream);
+                        pitch = InputStreamUtil.readShort(dataInputStream);
                     }
 
                     final Layer layer = layerMap.computeIfAbsent(currentLayer, index -> new Layer());
@@ -119,7 +119,7 @@ public final class Song {
 
             for (short i = 0; i < height; i++) {
                 final Layer layer = layerMap.get(i);
-                final String name = StreamUtil.readString(dataInputStream);
+                final String name = InputStreamUtil.readString(dataInputStream);
 
                 // Only read this information in NBS 4 or higher
                 if (version >= 4) {
