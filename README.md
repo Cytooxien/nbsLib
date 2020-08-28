@@ -21,7 +21,7 @@ songPlayer.addListeningPlayer(UUID.randomUUID()); // Replace with uuid of player
 songPlayer.play();
 ```
 
-Playing a song to a players within a certain range:
+Playing a song to players within a certain range:
 ```java
 final Location centerLocation = new Location(Bukkit.getWorld("world"), 0, 100, 0);
 final Song song = Song.createFromFile(new File("songFile.nbs"));
@@ -33,10 +33,7 @@ songPlayer.addListeningPlayer(UUID.randomUUID()); // Replace with uuid of player
 songPlayer.play();
 ```
 
-The library comes with a very simple callback-system. Callbacks may be registered within a song-player. 
-
-Add own event-adaper:
-
+Add own event-adapter:
 ```java
 final PositionedSongPlayer songPlayer = new PositionedSongPlayer(new Location(Bukkit.getWorld("world"), 0, 100, 0),
         Song.createFromFile(new File("songFile.nbs")));
