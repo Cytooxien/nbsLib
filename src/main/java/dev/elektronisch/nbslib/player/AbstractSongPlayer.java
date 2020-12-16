@@ -23,19 +23,24 @@ public abstract class AbstractSongPlayer<E extends SongPlayerEventAdapter> {
 
     protected Song currentSong;
     protected int currentSongIndex;
-    protected SongSelectionMode selectionMode = SongSelectionMode.ONCE;
-    protected SoundCategory soundCategory = SoundCategory.MASTER;
+    protected SongSelectionMode selectionMode;
+    protected SoundCategory soundCategory = SoundCategory.RECORDS;
     protected byte volume = 100;
     protected boolean playing;
     protected short currentTick;
 
     public AbstractSongPlayer(final Song... songs) {
+        this(SongSelectionMode.ONCE, songs);
+    }
+
+    public AbstractSongPlayer(final SongSelectionMode selectionMode, final Song... songs) {
         if (songs.length == 0) {
             throw new IllegalArgumentException("No songs given");
         }
-
+        this.selectionMode = selectionMode;
         this.songs = songs;
-        playSong(0);
+
+        selectNextSong();
     }
 
     public void play() {
@@ -50,33 +55,26 @@ public abstract class AbstractSongPlayer<E extends SongPlayerEventAdapter> {
                 final long startTime = System.currentTimeMillis();
                 if (currentTick++ > currentSong.getLength()) {
                     currentTick = -1;
-                    if (selectionMode == SongSelectionMode.REPEAT) {
-                        continue;
-                    } else if (selectionMode == SongSelectionMode.NEXT) {
-                        next();
-                        eventAdapters.forEach(adapter -> adapter.onPlay(currentSong));
-                        continue;
-                    } else if (selectionMode == SongSelectionMode.SHUFFLE) {
-                        currentSong = songs[RANDOM.nextInt(songs.length)];
+                    if (selectNextSong()) {
                         eventAdapters.forEach(adapter -> adapter.onPlay(currentSong));
                         continue;
                     }
+
                     playing = false;
                     eventAdapters.forEach(SongPlayerEventAdapter::onEnd);
                     continue;
                 }
 
-                if (listeningPlayers.isEmpty()) {
-                    Bukkit.getOnlinePlayers().forEach(this::handleTick);
-                } else {
-                    final Iterator<UUID> iterator = listeningPlayers.iterator();
-                    while (iterator.hasNext()) {
-                        final UUID uuid = iterator.next();
-                        final Player player = Bukkit.getPlayer(uuid);
-                        if (player == null) iterator.remove();
-
-                        handleTick(player);
+                final Iterator<UUID> iterator = listeningPlayers.iterator();
+                while (iterator.hasNext()) {
+                    final UUID uuid = iterator.next();
+                    final Player player = Bukkit.getPlayer(uuid);
+                    if (player == null) {
+                        iterator.remove();
+                        continue;
                     }
+
+                    handleTick(player);
                 }
 
                 final long duration = System.currentTimeMillis() - startTime;
@@ -98,18 +96,20 @@ public abstract class AbstractSongPlayer<E extends SongPlayerEventAdapter> {
         eventAdapters.forEach(SongPlayerEventAdapter::onPause);
     }
 
-    public void next() {
-        int nextIndex = currentSongIndex + 1;
-        if (nextIndex >= songs.length) {
-            nextIndex = 0;
+    public boolean selectNextSong() {
+        final int index = findNextSong();
+        if (index != -1) {
+            selectSong(index);
+            return true;
         }
-        playSong(nextIndex);
+        return false;
     }
 
-    public void playSong(int index) {
+    public void selectSong(int index) {
         this.currentSong = songs[index];
+        this.currentSongIndex = index;
+
         this.currentTick = -1;
-        this.eventAdapters.forEach(adapter -> adapter.onPlay(currentSong));
     }
 
     public abstract void handleTick(final Player player);
@@ -161,5 +161,29 @@ public abstract class AbstractSongPlayer<E extends SongPlayerEventAdapter> {
 
     public void setVolume(final byte volume) {
         this.volume = volume;
+    }
+
+    public Song getCurrentSong() {
+        return currentSong;
+    }
+
+    private int findNextSong() {
+        switch (selectionMode) {
+            case REPEAT:
+                return currentSongIndex;
+            case NEXT: {
+                int nextIndex = currentSongIndex + 1;
+                if (nextIndex >= songs.length) {
+                    nextIndex = 0;
+                }
+                return nextIndex;
+            }
+            case SHUFFLE:
+                return RANDOM.nextInt(songs.length);
+            case ONCE:
+                return currentSong == null ? RANDOM.nextInt(songs.length) : -1;
+            default:
+                return -1;
+        }
     }
 }

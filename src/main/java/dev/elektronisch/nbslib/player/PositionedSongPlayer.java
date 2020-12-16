@@ -1,9 +1,6 @@
 package dev.elektronisch.nbslib.player;
 
-import dev.elektronisch.nbslib.song.Layer;
-import dev.elektronisch.nbslib.song.Note;
-import dev.elektronisch.nbslib.song.PositionedSongPlayerEventAdapter;
-import dev.elektronisch.nbslib.song.Song;
+import dev.elektronisch.nbslib.song.*;
 import dev.elektronisch.nbslib.util.InstrumentUtil;
 import dev.elektronisch.nbslib.util.PitchUtil;
 import org.bukkit.Bukkit;
@@ -28,11 +25,16 @@ public final class PositionedSongPlayer extends AbstractSongPlayer<PositionedSon
         this.targetLocation = targetLocation;
     }
 
+    public PositionedSongPlayer(final SongSelectionMode selectionMode, final Location targetLocation, final Song... songs) {
+        super(selectionMode, songs);
+        this.targetLocation = targetLocation;
+    }
+
     @Override
     public void play() {
         super.play();
 
-        final Predicate<Player> predicate = player -> player.getWorld().equals(targetLocation.getWorld()) && player.getLocation().distanceSquared(targetLocation) > distanceSquared;
+        final Predicate<Player> predicate = player -> player.getWorld() == targetLocation.getWorld() && player.getLocation().distanceSquared(targetLocation) > distanceSquared;
         if (listeningPlayers.isEmpty()) {
             Bukkit.getOnlinePlayers().forEach(player -> {
                 if (predicate.test(player)) playersInRange.add(player.getUniqueId());

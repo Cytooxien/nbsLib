@@ -146,6 +146,10 @@ public final class Song {
         return null;
     }
 
+    public short getDuration() {
+        return (short) (length / speed);
+    }
+
     public String getTitle() {
         return title;
     }

@@ -6,7 +6,7 @@
 
     <groupId>dev.elektronisch.nbslib</groupId>
     <artifactId>nbsLib</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <properties>
         <plugin.java>1.8</plugin.java>
@@ -19,16 +19,27 @@
 
     <repositories>
         <repository>
+            <id>cytooxien</id>
+            <url>http://stash.cytooxien.de:8081/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
+    <distributionManagement>
+        <repository>
+            <id>cytooxien</id>
+            <url>http://stash.cytooxien.de:8081/nexus/content/repositories/APIs/</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.2-R0.1-SNAPSHOT</version>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -42,7 +53,7 @@
         <dependency>
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil</artifactId>
-            <version>8.4.1</version>
+            <version>8.4.4</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

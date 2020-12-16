@@ -1,16 +1,18 @@
 package dev.elektronisch.nbslib.player;
 
-import dev.elektronisch.nbslib.song.Layer;
-import dev.elektronisch.nbslib.song.Note;
-import dev.elektronisch.nbslib.song.Song;
+import dev.elektronisch.nbslib.song.*;
 import dev.elektronisch.nbslib.util.InstrumentUtil;
 import dev.elektronisch.nbslib.util.PitchUtil;
 import org.bukkit.entity.Player;
 
-public final class SimpleSongPlayer extends AbstractSongPlayer {
+public final class SimpleSongPlayer extends AbstractSongPlayer<SongPlayerEventAdapter> {
 
     public SimpleSongPlayer(final Song... songs) {
         super(songs);
+    }
+
+    public SimpleSongPlayer(final SongSelectionMode selectionMode, final Song... songs) {
+        super(selectionMode, songs);
     }
 
     @Override
